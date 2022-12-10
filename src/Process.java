@@ -63,7 +63,7 @@ public class Process implements Comparable<Process>, Comparator<Process> {
                 "processID = " + this.processName +
                 ", priority = " + this.priority +
                 ", arrivingTime = " + this.arrivalTime +
-                ", burstTime = " + this.burstTime + ", endTime = " + this.endTime +
+                ", burstTime = " + this.burstTime + ", endTime = " + this.endTime + ", BaseQuantum = " + this.baseQuantum +
                 "}\n");
     }
 

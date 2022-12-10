@@ -21,6 +21,7 @@ public class Main {
             if(readyQueue.size() == 0)
                 time++;
 
+
             while(readyQueue.size() != 0)
             {
                 // FCFS
@@ -28,6 +29,14 @@ public class Main {
                 {
                     current = readyQueue.get(0);
                 }
+
+//                System.out.print("Time: "+time+" ");
+//                for(int i =0 ;i<readyQueue.size() ; i++)
+//                {
+//                    readyQueue.get(i).printProcess();
+//                    System.out.println();
+//                }
+
 
                 //First ceil(25%)
                 current.checkExecutionTime();
@@ -83,7 +92,7 @@ public class Main {
                     // CASE II
                     readyQueue.remove(current);
                     readyQueue.add(current);
-                    current.setBaseQuantum((int) (current.getBaseQuantum() + Math.ceil(current.getVarQuantum() /2)));
+                    current.setBaseQuantum((int) (current.getBaseQuantum() + Math.ceil((double)current.getVarQuantum() /2)));
                     current.resetVarQuantum();
                     current = check;
                     continue;
