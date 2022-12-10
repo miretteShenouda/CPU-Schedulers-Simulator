@@ -1,7 +1,7 @@
 import java.util.Comparator;
 
 public class Process implements Comparable<Process>, Comparator<Process> {
-    private int arrivalTime, burstTime,priority, endTime, constBurstTime, waitingTime,turnAround;
+    private int arrivalTime, burstTime,priority, endTime, constBurstTime, waitingTime,turnAround , baseQuantum , varQuantum;
     private String processName;
     public Process() {
         this.processName = "";
@@ -18,6 +18,23 @@ public class Process implements Comparable<Process>, Comparator<Process> {
         this.constBurstTime=burstTime;
         this.priority=priority;
         this.endTime=0;
+    }
+
+    public int getVarQuantum() {
+        return varQuantum;
+    }
+
+    public void setVarQuantum(int varQuantum) {
+        this.varQuantum = varQuantum;
+    }
+
+    public int getBaseQuantum() {
+        return baseQuantum;
+    }
+
+    public void setBaseQuantum(int baseQuantum) {
+        this.baseQuantum = baseQuantum;
+        this.varQuantum = this.baseQuantum;
     }
 
     public int getConstBurstTime() {
@@ -70,9 +87,8 @@ public class Process implements Comparable<Process>, Comparator<Process> {
     public int compare(Process p1, Process p2) {
         return p1.getArrivalTime() - p2.getArrivalTime();}
 
-    public void checkExecutionTime(int Time)
-    {
-        Main.processesOrder.add(this.processName);
+    public void resetVarQuantum(){
+        varQuantum = baseQuantum;
     }
 
     public void checkExecutionTime()
