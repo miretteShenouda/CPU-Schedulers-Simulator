@@ -214,8 +214,8 @@ public class Main {
             //----------------------------------------
 //            stableArrivingSort(readyQueue);
 //            stablePrioritySort(readyQueue);
-            Collections.sort(readyQueue);
             Collections.sort(readyQueue,new Process()) ;
+            Collections.sort(readyQueue);
 
             //---------------printing ready queue after sorting-------------------------
             System.out.print("\n after sorting: \n");
