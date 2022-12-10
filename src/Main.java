@@ -25,7 +25,9 @@ public class Main {
             {
                 // FCFS
                 if(current == null)
+                {
                     current = readyQueue.get(0);
+                }
 
                 //First ceil(25%)
                 current.checkExecutionTime();
@@ -38,6 +40,7 @@ public class Main {
                 if(current.getBurstTime() <= 0)
                 {
                     readyQueue.remove(current);
+                    current.setEndTime(time);
                     current.setBaseQuantum(0);
                     current = null;
                     finished++;
@@ -64,6 +67,7 @@ public class Main {
                 if(current.getBurstTime() <= 0)
                 {
                     readyQueue.remove(current);
+                    current.setEndTime(time);
                     current.setBaseQuantum(0);
                     current = null;
                     finished++;
@@ -92,17 +96,19 @@ public class Main {
                     current.setVarQuantum(current.getVarQuantum() -1);
                     current.setBurstTime(current.getBurstTime() - 1);
                     time++;
+                    checkAddtoQueue(time);
 
                     if(current.getBurstTime() <= 0)
                     {
                         readyQueue.remove(current);
+                        current.setEndTime(time);
                         current.setBaseQuantum(0);
                         current = null;
                         finished++;
-                        continue;
+                        SJF_status = true;
+                        break;
                     }
 
-                    checkAddtoQueue(time);
 
                     // checking inside SJF algorithm
                     check = checkBurstTime();
@@ -506,7 +512,7 @@ public class Main {
 
         double sumWaitingTime = 0;
         double sumTurnAroundTime = 0;
-        for(int i =0 ; i<readyQueue.size() ; i++)
+        for(int i =0 ; i<processVector.size() ; i++)
         {
             System.out.println("Name: " + processVector.get(i).getProcessName());
             System.out.println("Burst: " + processVector.get(i).getBurstTime());
