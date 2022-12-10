@@ -1,8 +1,10 @@
 import java.util.Comparator;
+import java.util.Vector;
 
 public class Process implements Comparable<Process>, Comparator<Process> {
     private int arrivalTime, burstTime,priority, endTime, constBurstTime, waitingTime,turnAround , baseQuantum , varQuantum;
     private String processName;
+    Vector<Integer> baseHistory=new Vector<Integer>();
     public Process() {
         this.processName = "";
         this.priority = 0;
@@ -96,5 +98,17 @@ public class Process implements Comparable<Process>, Comparator<Process> {
         Main.processesOrder.add(this.processName);
     }
 
-
+    public void printHistory(Vector <Integer> vec)
+    {
+        System.out.print("Base Quantum History: ");
+        for (int i=0;i<vec.size();i++)
+        {
+            if (i>0 && vec.get(i) == vec.get(i-1))
+            {
+                continue;
+            }
+            System.out.print(vec.get(i) + " ");
+        }
+        System.out.println("");
+    }
 }

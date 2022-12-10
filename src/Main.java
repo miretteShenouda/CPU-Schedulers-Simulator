@@ -3,6 +3,8 @@ import java.util.Collections;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+//Input Line -->> p1 0 17 4 7 p2 2 6 7 9 p3 5 11 3 4 p4 15 4 6 6
+
 public class Main {
 
     public static Vector<String> processesOrder= new Vector<>(); //order of processes during execution
@@ -42,7 +44,8 @@ public class Main {
                 current.checkExecutionTime();
                 time += Math.min(Math.ceil((double)current.getBaseQuantum() / 4) , current.getBurstTime());
                 current.setBurstTime((int) (current.getBurstTime() - Math.ceil((double)current.getBaseQuantum() / 4)));
-                current.setVarQuantum((int) (current.getVarQuantum() -Math.ceil((double)current.getVarQuantum() / 4)));
+                current.setVarQuantum((int) (current.getVarQuantum() - Math.ceil((double)current.getVarQuantum() / 4)));
+                current.baseHistory.add(current.getBaseQuantum());
 
 
 
@@ -55,6 +58,7 @@ public class Main {
                     readyQueue.remove(current);
                     current.setEndTime(time);
                     current.setBaseQuantum(0);
+                    current.baseHistory.add(current.getBaseQuantum());
                     current = null;
                     finished++;
                     continue;
@@ -71,6 +75,7 @@ public class Main {
                     readyQueue.add(current);
                     current.setBaseQuantum((int) (current.getBaseQuantum() + Math.ceil((double)current.getVarQuantum() /2)));
                     current.resetVarQuantum();
+                    current.baseHistory.add(current.getBaseQuantum());
                     current = check;
                     continue;
                 }
@@ -78,7 +83,7 @@ public class Main {
                 time += Math.min((Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) ) , current.getBurstTime() );
                 current.setBurstTime((int) (current.getBurstTime() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
                 current.setVarQuantum((int) ( current.getVarQuantum() -(Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
-
+                current.baseHistory.add(current.getBaseQuantum());
 
                 checkAddtoQueue(time);
 
@@ -87,6 +92,7 @@ public class Main {
                     readyQueue.remove(current);
                     current.setEndTime(time);
                     current.setBaseQuantum(0);
+                    current.baseHistory.add(current.getBaseQuantum());
                     current = null;
                     finished++;
                     continue;
@@ -103,6 +109,7 @@ public class Main {
                     readyQueue.add(current);
                     current.setBaseQuantum(current.getBaseQuantum() + current.getVarQuantum());
                     current.resetVarQuantum();
+                    current.baseHistory.add(current.getBaseQuantum());
                     current = check;
                     continue;
                 }
@@ -113,6 +120,7 @@ public class Main {
                 {
                     current.setVarQuantum(current.getVarQuantum() -1);
                     current.setBurstTime(current.getBurstTime() - 1);
+                    current.baseHistory.add(current.getBaseQuantum());
                     time++;
                     checkAddtoQueue(time);
 
@@ -121,6 +129,7 @@ public class Main {
                         readyQueue.remove(current);
                         current.setEndTime(time);
                         current.setBaseQuantum(0);
+                        current.baseHistory.add(current.getBaseQuantum());
                         current = null;
                         finished++;
                         SJF_status = true;
@@ -137,6 +146,7 @@ public class Main {
                         readyQueue.add(current);
                         current.setBaseQuantum(current.getBaseQuantum() + current.getVarQuantum());
                         current.resetVarQuantum();
+                        current.baseHistory.add(current.getBaseQuantum());
                         current = check;
                         SJF_status = true;
                         break;
@@ -154,17 +164,17 @@ public class Main {
                     readyQueue.add(current);
                     current.setBaseQuantum(current.getBaseQuantum() +2);
                     current.resetVarQuantum();
+                    current.baseHistory.add(current.getBaseQuantum());
                     current = null;
                 }
                 else if(current.getBurstTime() <= 0)
                 {
                     readyQueue.remove(current);
                     current.setBaseQuantum(0);
+                    current.baseHistory.add(current.getBaseQuantum());
                     current = null;
                     finished++;
                 }
-
-
 
             }
         }
@@ -537,7 +547,8 @@ public class Main {
             System.out.println("Burst: " + processVector.get(i).getBurstTime());
             System.out.println("Waiting time: " + processVector.get(i).getWaitingTime());
             System.out.println("end_time: " + processVector.get(i).getEndTime());
-
+            System.out.println("BASE HISTORYYYYYYYY");
+            processVector.get(i).printHistory(processVector.get(i).baseHistory);
 
             sumWaitingTime += processVector.get(i).getWaitingTime();
 
