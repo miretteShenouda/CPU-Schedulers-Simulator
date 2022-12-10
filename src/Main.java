@@ -30,12 +30,12 @@ public class Main {
                     current = readyQueue.get(0);
                 }
 
-//                System.out.print("Time: "+time+" ");
-//                for(int i =0 ;i<readyQueue.size() ; i++)
-//                {
-//                    readyQueue.get(i).printProcess();
-//                    System.out.println();
-//                }
+                System.out.print("Time: "+time+" ");
+                for(int i =0 ;i<readyQueue.size() ; i++)
+                {
+                    readyQueue.get(i).printProcess();
+                    System.out.println();
+                }
 
 
                 //First ceil(25%)
@@ -62,8 +62,11 @@ public class Main {
                 // checking if current can be changed  (non-preemptive Priority );
                 if(current != check)
                 {
+                    // CASE II
+                    readyQueue.remove(current);
+                    readyQueue.add(current);
+                    current.setBaseQuantum((int) (current.getBaseQuantum() + Math.ceil((double)current.getVarQuantum() /2)));
                     current.resetVarQuantum();
-                    // switching quantum required!!!!
                     current = check;
                     continue;
                 }
@@ -137,7 +140,8 @@ public class Main {
                 if(SJF_status)
                     continue;
 
-                if(current.getBurstTime() !=0)
+
+                if(current.getBurstTime() > 0)
                 {
                     // CASE I
                     readyQueue.remove(current);
