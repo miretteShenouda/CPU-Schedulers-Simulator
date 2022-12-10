@@ -17,9 +17,6 @@ public class Main {
         Process current = null , check = null ;
         while(finished != arrivingVector.size())
         {
-            // burst check needed!!
-            
-
             checkAddtoQueue(time);
             if(readyQueue.size() == 0)
                 time++;
@@ -32,11 +29,22 @@ public class Main {
 
                 //First ceil(25%)
                 current.checkExecutionTime();
+                time += Math.min(Math.ceil((double)current.getBaseQuantum() / 4) , current.getBurstTime());
                 current.setBurstTime((int) (current.getBurstTime() - Math.ceil((double)current.getBaseQuantum() / 4)));
                 current.setVarQuantum((int) (current.getBaseQuantum() - Math.ceil((double)current.getBaseQuantum() / 4)));
-
-                time += Math.ceil((double)current.getBaseQuantum() / 4);
                 checkAddtoQueue(time);
+
+
+                if(current.getBurstTime() <= 0)
+                {
+                    readyQueue.remove(current);
+                    current.setBaseQuantum(0);
+                    current = null;
+                    finished++;
+                    continue;
+                }
+
+
 
                 check = checkPriority();
                 // checking if current can be changed  (non-preemptive Priority );
@@ -48,11 +56,21 @@ public class Main {
                     continue;
                 }
                 // Ceil(50%)
+                time += Math.min((Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double)current.getBaseQuantum() / 4)) , current.getBurstTime() );
                 current.setBurstTime((int) (current.getBurstTime() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double)current.getBaseQuantum() / 4))));
                 current.setVarQuantum((int) (current.getBaseQuantum() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double)current.getBaseQuantum() / 4))));
-
-                time += (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double)current.getBaseQuantum() / 4));
                 checkAddtoQueue(time);
+
+                if(current.getBurstTime() <= 0)
+                {
+                    readyQueue.remove(current);
+                    current.setBaseQuantum(0);
+                    current = null;
+                    finished++;
+                    continue;
+                }
+
+
 
                 // checking if current can be changed (preemptive SJF)
                 check = checkBurstTime();
@@ -68,11 +86,22 @@ public class Main {
                 }
 
                 // SJF Algorithm
+                boolean SJF_status = false;
                 for(int i =0 ; i<current.getVarQuantum() ; i++)
                 {
                     current.setVarQuantum(current.getVarQuantum() -1);
                     current.setBurstTime(current.getBurstTime() - 1);
                     time++;
+
+                    if(current.getBurstTime() <= 0)
+                    {
+                        readyQueue.remove(current);
+                        current.setBaseQuantum(0);
+                        current = null;
+                        finished++;
+                        continue;
+                    }
+
                     checkAddtoQueue(time);
 
                     // checking inside SJF algorithm
@@ -85,9 +114,13 @@ public class Main {
                         current.setBaseQuantum(current.getBaseQuantum() + current.getVarQuantum());
                         current.resetVarQuantum();
                         current = check;
-                        continue;
+                        SJF_status = true;
+                        break;
                     }
                 }
+
+                if(SJF_status)
+                    continue;
 
                 if(current.getBurstTime() !=0)
                 {
@@ -95,9 +128,16 @@ public class Main {
                     readyQueue.remove(current);
                     readyQueue.add(current);
                     current.setBaseQuantum(current.getBaseQuantum() +2);
+                    current.resetVarQuantum();
                     current = null;
                 }
-
+                else if(current.getBurstTime() <= 0)
+                {
+                    readyQueue.remove(current);
+                    current.setBaseQuantum(0);
+                    current = null;
+                    finished++;
+                }
 
 
 
