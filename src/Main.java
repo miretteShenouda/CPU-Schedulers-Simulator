@@ -42,8 +42,12 @@ public class Main {
                 current.checkExecutionTime();
                 time += Math.min(Math.ceil((double)current.getBaseQuantum() / 4) , current.getBurstTime());
                 current.setBurstTime((int) (current.getBurstTime() - Math.ceil((double)current.getBaseQuantum() / 4)));
-                current.setVarQuantum((int) (current.getBaseQuantum() - Math.ceil((double)current.getBaseQuantum() / 4)));
+                current.setVarQuantum((int) (current.getVarQuantum() -Math.ceil((double)current.getVarQuantum() / 4)));
+
+
+
                 checkAddtoQueue(time);
+
 
 
                 if(current.getBurstTime() <= 0)
@@ -71,9 +75,11 @@ public class Main {
                     continue;
                 }
                 // Ceil(50%)
-                time += Math.min((Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double)current.getBaseQuantum() / 4)) , current.getBurstTime() );
-                current.setBurstTime((int) (current.getBurstTime() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double)current.getBaseQuantum() / 4))));
-                current.setVarQuantum((int) (current.getBaseQuantum() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double)current.getBaseQuantum() / 4))));
+                time += Math.min((Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) ) , current.getBurstTime() );
+                current.setBurstTime((int) (current.getBurstTime() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
+                current.setVarQuantum((int) ( current.getVarQuantum() -(Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
+
+
                 checkAddtoQueue(time);
 
                 if(current.getBurstTime() <= 0)
@@ -92,10 +98,10 @@ public class Main {
                 check = checkBurstTime();
                 if(current != check)
                 {
-                    // CASE II
+                    // CASE III
                     readyQueue.remove(current);
                     readyQueue.add(current);
-                    current.setBaseQuantum((int) (current.getBaseQuantum() + Math.ceil((double)current.getVarQuantum() /2)));
+                    current.setBaseQuantum(current.getBaseQuantum() + current.getVarQuantum());
                     current.resetVarQuantum();
                     current = check;
                     continue;
