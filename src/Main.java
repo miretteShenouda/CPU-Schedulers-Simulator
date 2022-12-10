@@ -3,6 +3,8 @@ import java.util.Collections;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+//Input Line -->> p1 0 17 4 7 p2 2 6 7 9 p3 5 11 3 4 p4 15 4 6 6
+
 public class Main {
 
     public static Vector<String> processesOrder= new Vector<>(); //order of processes during execution
@@ -11,6 +13,187 @@ public class Main {
     public static Vector<Process> arrivingVector = new Vector<>();// tartib el arriving
 
     public static int idx=0;
+
+    public static void AGScheduling (){
+        int time =0 , finished =0;
+        Process current = null , check = null ;
+        while(finished != arrivingVector.size())
+        {
+            checkAddtoQueue(time);
+            if(readyQueue.size() == 0)
+                time++;
+
+
+            while(readyQueue.size() != 0)
+            {
+                // FCFS
+                if(current == null)
+                {
+                    current = readyQueue.get(0);
+                }
+
+                System.out.print("Time: "+time+" ");
+                for(int i =0 ;i<readyQueue.size() ; i++)
+                {
+                    readyQueue.get(i).printProcess();
+                    System.out.println();
+                }
+
+
+                //First ceil(25%)
+                current.checkExecutionTime();
+                time += Math.min(Math.ceil((double)current.getBaseQuantum() / 4) , current.getBurstTime());
+                current.setBurstTime((int) (current.getBurstTime() - Math.ceil((double)current.getBaseQuantum() / 4)));
+                current.setVarQuantum((int) (current.getVarQuantum() - Math.ceil((double)current.getVarQuantum() / 4)));
+                current.baseHistory.add(current.getBaseQuantum());
+
+
+
+                checkAddtoQueue(time);
+
+
+
+                if(current.getBurstTime() <= 0)
+                {
+                    readyQueue.remove(current);
+                    current.setEndTime(time);
+                    current.setBaseQuantum(0);
+                    current.baseHistory.add(current.getBaseQuantum());
+                    current = null;
+                    finished++;
+                    continue;
+                }
+
+
+
+                check = checkPriority();
+                // checking if current can be changed  (non-preemptive Priority );
+                if(current != check)
+                {
+                    // CASE II
+                    readyQueue.remove(current);
+                    readyQueue.add(current);
+                    current.setBaseQuantum((int) (current.getBaseQuantum() + Math.ceil((double)current.getVarQuantum() /2)));
+                    current.resetVarQuantum();
+                    current.baseHistory.add(current.getBaseQuantum());
+                    current = check;
+                    continue;
+                }
+                // Ceil(50%)
+                time += Math.min((Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) ) , current.getBurstTime() );
+                current.setBurstTime((int) (current.getBurstTime() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
+                current.setVarQuantum((int) ( current.getVarQuantum() -(Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
+                current.baseHistory.add(current.getBaseQuantum());
+
+                checkAddtoQueue(time);
+
+                if(current.getBurstTime() <= 0)
+                {
+                    readyQueue.remove(current);
+                    current.setEndTime(time);
+                    current.setBaseQuantum(0);
+                    current.baseHistory.add(current.getBaseQuantum());
+                    current = null;
+                    finished++;
+                    continue;
+                }
+
+
+
+                // checking if current can be changed (preemptive SJF)
+                check = checkBurstTime();
+                if(current != check)
+                {
+                    // CASE III
+                    readyQueue.remove(current);
+                    readyQueue.add(current);
+                    current.setBaseQuantum(current.getBaseQuantum() + current.getVarQuantum());
+                    current.resetVarQuantum();
+                    current.baseHistory.add(current.getBaseQuantum());
+                    current = check;
+                    continue;
+                }
+
+                // SJF Algorithm
+                boolean SJF_status = false;
+                for(int i =0 ; i<current.getVarQuantum() ; i++)
+                {
+                    current.setVarQuantum(current.getVarQuantum() -1);
+                    current.setBurstTime(current.getBurstTime() - 1);
+                    current.baseHistory.add(current.getBaseQuantum());
+                    time++;
+                    checkAddtoQueue(time);
+
+                    if(current.getBurstTime() <= 0)
+                    {
+                        readyQueue.remove(current);
+                        current.setEndTime(time);
+                        current.setBaseQuantum(0);
+                        current.baseHistory.add(current.getBaseQuantum());
+                        current = null;
+                        finished++;
+                        SJF_status = true;
+                        break;
+                    }
+
+
+                    // checking inside SJF algorithm
+                    check = checkBurstTime();
+                    if(current != check)
+                    {
+                        // CASE III
+                        readyQueue.remove(current);
+                        readyQueue.add(current);
+                        current.setBaseQuantum(current.getBaseQuantum() + current.getVarQuantum());
+                        current.resetVarQuantum();
+                        current.baseHistory.add(current.getBaseQuantum());
+                        current = check;
+                        SJF_status = true;
+                        break;
+                    }
+                }
+
+                if(SJF_status)
+                    continue;
+
+
+                if(current.getBurstTime() > 0)
+                {
+                    // CASE I
+                    readyQueue.remove(current);
+                    readyQueue.add(current);
+                    current.setBaseQuantum(current.getBaseQuantum() +2);
+                    current.resetVarQuantum();
+                    current.baseHistory.add(current.getBaseQuantum());
+                    current = null;
+                }
+                else if(current.getBurstTime() <= 0)
+                {
+                    readyQueue.remove(current);
+                    current.setBaseQuantum(0);
+                    current.baseHistory.add(current.getBaseQuantum());
+                    current = null;
+                    finished++;
+                }
+
+            }
+        }
+    }
+
+    public static Process checkPriority(){
+        Process min =null;
+        int index = -1 , minPrio = 999999999;
+        for(int i =0 ; i< readyQueue.size(); i++)
+        {
+            if(readyQueue.get(i).getPriority() < minPrio)
+            {
+                minPrio = readyQueue.get(i).getPriority();
+                index = i;
+            }
+        }
+        min = readyQueue.get(index);
+        return min;
+    }
 
     public static void checkAddtoQueue(int Time) {
 
@@ -26,7 +209,7 @@ public class Main {
         }
     }
 
-    public static Process checkPriority()
+    public static Process checkBurstTime()
     {
         Process min=null;
         int minPrio=10000000, minSer=1000000;
@@ -86,10 +269,10 @@ public class Main {
 
 
 
-                Process essam = checkPriority();
+                Process essam = checkBurstTime();
 
                 //To access the execution time
-                essam.checkExecutionTime(time);
+                essam.checkExecutionTime();
 
 
                 while (essam.getBurstTime()!=0)
@@ -107,7 +290,7 @@ public class Main {
 //                    }
 
 
-                    checkProcess=checkPriority();
+                    checkProcess=checkBurstTime();
 
                     // switching process to get The lowest & plus the context switch
                     if (essam!=checkProcess)
@@ -116,7 +299,7 @@ public class Main {
                         time += context_switching;
                         checkAddtoQueue(time);
 
-                        checkProcess.checkExecutionTime(time);
+                        checkProcess.checkExecutionTime();
 
 
                         essam = checkProcess;
@@ -278,9 +461,9 @@ public class Main {
     public static void main(String[] args)
     {
         Scanner input = new Scanner(System.in);
-        int n, quantum , context_switching, Time=0,Finished=0;
+        int  quantum , context_switching;
 
-        int numberOfProcesses, arrivalTime, burstTime, priority;
+        int numberOfProcesses, arrivalTime, burstTime, priority , processQuantum;
         String processName;
 
         int choice=0;
@@ -303,7 +486,11 @@ public class Main {
             System.out.println("enter process priority");
             priority = input.nextInt();
 
+            System.out.println("enter process specific quantum (AG)");
+            processQuantum = input.nextInt();
+
             Process p1 = new Process(processName, arrivalTime, burstTime, priority);
+            p1.setBaseQuantum(processQuantum);
 
             processVector.add(p1);
             arrivingVector.add(p1); // sorted by arrival time
@@ -339,7 +526,7 @@ public class Main {
         }
         else if(choice==4)
         {
-
+            AGScheduling();
         }
         else
         {
@@ -354,13 +541,14 @@ public class Main {
 
         double sumWaitingTime = 0;
         double sumTurnAroundTime = 0;
-        for(int i =0 ; i<readyQueue.size() ; i++)
+        for(int i =0 ; i<processVector.size() ; i++)
         {
             System.out.println("Name: " + processVector.get(i).getProcessName());
             System.out.println("Burst: " + processVector.get(i).getBurstTime());
             System.out.println("Waiting time: " + processVector.get(i).getWaitingTime());
             System.out.println("end_time: " + processVector.get(i).getEndTime());
-
+            System.out.println("BASE HISTORYYYYYYYY");
+            processVector.get(i).printHistory(processVector.get(i).baseHistory);
 
             sumWaitingTime += processVector.get(i).getWaitingTime();
 

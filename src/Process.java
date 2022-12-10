@@ -1,8 +1,10 @@
 import java.util.Comparator;
+import java.util.Vector;
 
 public class Process implements Comparable<Process>, Comparator<Process> {
-    private int arrivalTime, burstTime,priority, endTime, constBurstTime, waitingTime,turnAround;
+    private int arrivalTime, burstTime,priority, endTime, constBurstTime, waitingTime,turnAround , baseQuantum , varQuantum;
     private String processName;
+    Vector<Integer> baseHistory=new Vector<Integer>();
     public Process() {
         this.processName = "";
         this.priority = 0;
@@ -18,6 +20,23 @@ public class Process implements Comparable<Process>, Comparator<Process> {
         this.constBurstTime=burstTime;
         this.priority=priority;
         this.endTime=0;
+    }
+
+    public int getVarQuantum() {
+        return varQuantum;
+    }
+
+    public void setVarQuantum(int varQuantum) {
+        this.varQuantum = varQuantum;
+    }
+
+    public int getBaseQuantum() {
+        return baseQuantum;
+    }
+
+    public void setBaseQuantum(int baseQuantum) {
+        this.baseQuantum = baseQuantum;
+        this.varQuantum = this.baseQuantum;
     }
 
     public int getConstBurstTime() {
@@ -46,7 +65,7 @@ public class Process implements Comparable<Process>, Comparator<Process> {
                 "processID = " + this.processName +
                 ", priority = " + this.priority +
                 ", arrivingTime = " + this.arrivalTime +
-                ", burstTime = " + this.burstTime + ", endTime = " + this.endTime +
+                ", burstTime = " + this.burstTime + ", endTime = " + this.endTime + ", BaseQuantum = " + this.baseQuantum +
                 "}\n");
     }
 
@@ -70,9 +89,8 @@ public class Process implements Comparable<Process>, Comparator<Process> {
     public int compare(Process p1, Process p2) {
         return p1.getArrivalTime() - p2.getArrivalTime();}
 
-    public void checkExecutionTime(int Time)
-    {
-        Main.processesOrder.add(this.processName);
+    public void resetVarQuantum(){
+        varQuantum = baseQuantum;
     }
 
     public void checkExecutionTime()
@@ -80,5 +98,17 @@ public class Process implements Comparable<Process>, Comparator<Process> {
         Main.processesOrder.add(this.processName);
     }
 
-
+    public void printHistory(Vector <Integer> vec)
+    {
+        System.out.print("Base Quantum History: ");
+        for (int i=0;i<vec.size();i++)
+        {
+            if (i>0 && vec.get(i) == vec.get(i-1))
+            {
+                continue;
+            }
+            System.out.print(vec.get(i) + " ");
+        }
+        System.out.println("");
+    }
 }
