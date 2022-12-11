@@ -43,7 +43,10 @@ public class Main {
                 //First ceil(25%)
                 current.checkExecutionTime();
                 time += Math.min(Math.ceil((double)current.getBaseQuantum() / 4) , current.getBurstTime());
-                current.setBurstTime((int) (current.getBurstTime() - Math.ceil((double)current.getBaseQuantum() / 4)));
+                if (Math.min(Math.ceil((double)current.getBaseQuantum() / 4) , current.getBurstTime()) == current.getBurstTime())
+                    current.setBurstTime(0);
+                else
+                    current.setBurstTime((int) (current.getBurstTime() - Math.ceil((double)current.getBaseQuantum() / 4)));
                 current.setVarQuantum((int) (current.getVarQuantum() - Math.ceil((double)current.getVarQuantum() / 4)));
                 current.baseHistory.add(current.getBaseQuantum());
 
@@ -81,7 +84,10 @@ public class Main {
                 }
                 // Ceil(50%)
                 time += Math.min((Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) ) , current.getBurstTime() );
-                current.setBurstTime((int) (current.getBurstTime() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
+                if (Math.min(Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4)  , current.getBurstTime()) == current.getBurstTime())
+                    current.setBurstTime(0);
+                else
+                    current.setBurstTime((int) (current.getBurstTime() - (Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
                 current.setVarQuantum((int) ( current.getVarQuantum() -(Math.ceil((double)current.getBaseQuantum() / 2) - Math.ceil((double) current.getBaseQuantum() /4) )));
                 current.baseHistory.add(current.getBaseQuantum());
 
@@ -302,9 +308,9 @@ public class Main {
     public static void RRScheduling (int context_switching,int quantum)
     {
         int finished=0, time=0;
-        Process checkProcess = new Process();
-
-        while(finished!=readyQueue.size())
+        Process checkProcess = null;
+        System.out.print(context_switching+" "+quantum);
+        while(finished!=processVector.size())
         {
 
             checkAddtoQueue(time);
@@ -413,7 +419,7 @@ public class Main {
         String processName;
 
         int choice = 0;
-
+        do{
         System.out.println("enter number of processes");
         numberOfProcesses = input.nextInt();
 
@@ -442,7 +448,7 @@ public class Main {
         }
 
         Collections.sort(arrivingVector, new Process());
-        do {
+
             System.out.println("choose one of the following:-\n");
             System.out.println("1-SJFScheduling\n");
             System.out.println("2-RRScheduling\n");
@@ -457,8 +463,10 @@ public class Main {
             } else if (choice == 2) {
                 System.out.println("enter the context switching\n");
                 context_switching = input.nextInt();
+
                 System.out.println("enter the quantum value\n");
                 quantum = input.nextInt();
+
                 RRScheduling(context_switching, quantum);
 
             } else if (choice == 3) {
@@ -478,10 +486,11 @@ public class Main {
             double sumTurnAroundTime = 0;
             for (int i = 0; i < processVector.size(); i++) {
                 System.out.println("Name: " + processVector.get(i).getProcessName());
-                System.out.println("Burst time: " + processVector.get(i).getBurstTime());
                 System.out.println("turnAround: " + processVector.get(i).getTurnAround());
                 System.out.println("Waiting time: " + processVector.get(i).getWaitingTime());
                 System.out.println("end_time: " + processVector.get(i).getEndTime());
+                System.out.println("burst time: " + processVector.get(i).getBurstTime());
+
                 if(choice==4) {
 
                     processVector.get(i).printHistory(processVector.get(i).baseHistory);
@@ -494,10 +503,10 @@ public class Main {
             System.out.println(sumWaitingTime / processVector.size());
             System.out.println("Average Turn Around Time: ");
             System.out.println(sumTurnAroundTime / processVector.size());
-            //processVector.clear();
-           // arrivingVector.clear();
-            //readyQueue.clear();
-           // processesOrder.clear();
+            processVector.clear();
+            arrivingVector.clear();
+            readyQueue.clear();
+            processesOrder.clear();
 
         }
         while (choice!=0);
