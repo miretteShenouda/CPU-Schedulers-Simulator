@@ -1,22 +1,22 @@
 import java.util.*;
 import java.util.Collections;
 import java.util.Vector;
-import java.util.stream.Collectors;
+
 
 //Input Line -->> p1 0 17 4 7 p2 2 6 7 9 p3 5 11 3 4 p4 15 4 6 6
 
 public class Main {
 
-    public static Vector<String> processesOrder= new Vector<>(); //order of processes during execution
-    public static Vector<Process> readyQueue = new Vector<>();// fih el 7agat elli el mafrod tetnafez b tarteb tanfezha
-    public static Vector<Process> processVector = new Vector<>();/// kol el processes elli dkhalet
-    public static Vector<Process> arrivingVector = new Vector<>();// tartib el arriving
+    public static Vector<String> processesOrder= new Vector<>(); //order of processes during execution
+    public static Vector<Process> readyQueue = new Vector<>();
+    public static Vector<Process> processVector = new Vector<>();/// all processes
+    public static Vector<Process> arrivingVector = new Vector<>();// processes with their arriving order
 
     public static int idx=0;
 
     public static void AGScheduling (){
         int time =0 , finished =0;
-        Process current = null , check = null ;
+        Process current = null , check;
         while(finished != arrivingVector.size())
         {
             checkAddtoQueue(time);
@@ -247,8 +247,6 @@ public class Main {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     public static void SJFScheduling (int context_switching)
     {
-        //Collections.sort(arrivingVector , new Process());
-
         int finished=0, time=0;
         Process checkProcess = new Process();
 
@@ -262,12 +260,7 @@ public class Main {
 
             while (readyQueue.size()!=0)
             {
-
-                //int starvation=0;
-
                 //To get The Highest Priority
-
-
 
                 Process essam = checkBurstTime();
 
@@ -280,15 +273,6 @@ public class Main {
                     essam.setBurstTime(essam.getBurstTime()-1);
                     time++;
                     checkAddtoQueue(time);
-
-                    //solving starvation problem
-//                    starvation++;
-//                    if (starvation==3)
-//                    {
-//                        essam.priority++;
-//                        starvation=0;
-//                    }
-
 
                     checkProcess=checkBurstTime();
 
@@ -317,8 +301,6 @@ public class Main {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     public static void RRScheduling (int context_switching,int quantum)
     {
-        //Collections.sort(arrivingVector , new Process());\
-
         int finished=0, time=0;
         Process checkProcess = new Process();
 
@@ -359,8 +341,6 @@ public class Main {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     public static void PPScheduling ()
     {
-        //Collections.sort(arrivingVector , new Process());
-
         Process executionProcess = new Process();
         boolean arrivingIsEmpty=false;
 
@@ -386,29 +366,11 @@ public class Main {
             {
                 arrivingIsEmpty=true;
             }
-            //------------printing ready queue before sorting----------------------------
-            System.out.print("\n befor sorting: \n");
 
-            for(int y=0;y<readyQueue.size();y++)
-            {
-                readyQueue.get(y).printProcess();
-            }
-            System.out.print("\n");
-            //----------------------------------------
-//            stableArrivingSort(readyQueue);
-//            stablePrioritySort(readyQueue);
             Collections.sort(readyQueue,new Process()) ;
             Collections.sort(readyQueue);
 
-            //---------------printing ready queue after sorting-------------------------
-            System.out.print("\n after sorting: \n");
 
-            for(int y=0;y<readyQueue.size();y++)
-            {
-                readyQueue.get(y).printProcess();
-            }
-            System.out.print("\n");
-            //----------------------------------------
             if(readyQueue.size()!=0){ executionProcess=readyQueue.get(0);}
 
             //this if else is to add to process execution order to vector
@@ -440,39 +402,22 @@ public class Main {
                 executionProcess.setBurstTime(executionProcess.getBurstTime() - 1);
             }
 
-//            System.out.print("executing process is:  \n");
-//            executionProcess.printProcess();
-//            //System.out.print("");
-//
-//            System.out.print("\narrivingVector:  \n");
-//            for(int x=0;x<arrivingVector.size();x++)
-//            {
-//                arrivingVector.get(x).printProcess();
-//            }
-//            System.out.print("readyQueue:  \n");
-//            for(int x=0;x<readyQueue.size();x++)
-//            {
-//                readyQueue.get(x).printProcess();
-//            }
-//            executionProcess=new Process();
         }
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        int  quantum , context_switching;
+        int quantum, context_switching;
 
-        int numberOfProcesses, arrivalTime, burstTime, priority , processQuantum;
+        int numberOfProcesses, arrivalTime, burstTime, priority, processQuantum;
         String processName;
 
-        int choice=0;
+        int choice = 0;
 
         System.out.println("enter number of processes");
         numberOfProcesses = input.nextInt();
 
-        for (int i = 0; i < numberOfProcesses; i++)
-        {
+        for (int i = 0; i < numberOfProcesses; i++) {
             System.out.println("enter process name");
             processName = input.next();
 
@@ -496,71 +441,66 @@ public class Main {
             arrivingVector.add(p1); // sorted by arrival time
         }
 
-        Collections.sort(arrivingVector , new Process());
+        Collections.sort(arrivingVector, new Process());
+        do {
+            System.out.println("choose one of the following:-\n");
+            System.out.println("1-SJFScheduling\n");
+            System.out.println("2-RRScheduling\n");
+            System.out.println("3-PPScheduling\n");
+            System.out.println("4-AGScheduling\n");
+            choice = input.nextInt();
 
-        System.out.println("choose one of the following:-\n");
-        System.out.println("1-SJFScheduling\n");
-        System.out.println("2-RRScheduling\n");
-        System.out.println("3-PPScheduling\n");
-        System.out.println("4-AGScheduling\n");
-        choice=input.nextInt();
+            if (choice == 1) {
+                System.out.println("enter the context switching\n");
+                context_switching = input.nextInt();
+                SJFScheduling(context_switching);
+            } else if (choice == 2) {
+                System.out.println("enter the context switching\n");
+                context_switching = input.nextInt();
+                System.out.println("enter the quantum value\n");
+                quantum = input.nextInt();
+                RRScheduling(context_switching, quantum);
 
-        if(choice==1)
-        {
-            System.out.println("enter the context switching\n");
-            context_switching=input.nextInt();
-            SJFScheduling(context_switching);
+            } else if (choice == 3) {
+                PPScheduling();
+            } else if (choice == 4) {
+                AGScheduling();
+            } else {
+                System.out.println("Wrong input.\n");
+            }
+
+            System.out.println("The Execution Order: ");
+            for (int i = 0; i < processesOrder.size(); i++) {
+                System.out.println(processesOrder.get(i));
+            }
+
+            double sumWaitingTime = 0;
+            double sumTurnAroundTime = 0;
+            for (int i = 0; i < processVector.size(); i++) {
+                System.out.println("Name: " + processVector.get(i).getProcessName());
+                System.out.println("Burst time: " + processVector.get(i).getBurstTime());
+                System.out.println("turnAround: " + processVector.get(i).getTurnAround());
+                System.out.println("Waiting time: " + processVector.get(i).getWaitingTime());
+                System.out.println("end_time: " + processVector.get(i).getEndTime());
+                if(choice==4) {
+
+                    processVector.get(i).printHistory(processVector.get(i).baseHistory);
+                }
+                sumWaitingTime += processVector.get(i).getWaitingTime();
+                sumTurnAroundTime += processVector.get(i).getTurnAround();
+            }
+
+            System.out.println("Average Waiting Time: ");
+            System.out.println(sumWaitingTime / processVector.size());
+            System.out.println("Average Turn Around Time: ");
+            System.out.println(sumTurnAroundTime / processVector.size());
+            //processVector.clear();
+           // arrivingVector.clear();
+            //readyQueue.clear();
+           // processesOrder.clear();
+
         }
-        else if(choice==2)
-        {
-            System.out.println("enter the context switching\n");
-            context_switching=input.nextInt();
-            System.out.println("enter the quantum value\n");
-            quantum=input.nextInt();
-            RRScheduling(context_switching,quantum);
-
-        }
-        else if(choice==3)
-        {
-            PPScheduling();
-        }
-        else if(choice==4)
-        {
-            AGScheduling();
-        }
-        else
-        {
-            System.out.println("Wrong input.\n");
-        }
-
-        System.out.println("The Execution Order: ");
-        for (int i=0;i<processesOrder.size();i++)
-        {
-            System.out.println(processesOrder.get(i));
-        }
-
-        double sumWaitingTime = 0;
-        double sumTurnAroundTime = 0;
-        for(int i =0 ; i<processVector.size() ; i++)
-        {
-            System.out.println("Name: " + processVector.get(i).getProcessName());
-            System.out.println("Burst: " + processVector.get(i).getBurstTime());
-            System.out.println("Waiting time: " + processVector.get(i).getWaitingTime());
-            System.out.println("end_time: " + processVector.get(i).getEndTime());
-            System.out.println("BASE HISTORYYYYYYYY");
-            processVector.get(i).printHistory(processVector.get(i).baseHistory);
-
-            sumWaitingTime += processVector.get(i).getWaitingTime();
-
-
-            sumTurnAroundTime += processVector.get(i).getTurnAround();
-        }
-
-        System.out.println("Average Waiting Time: ");
-        System.out.println(sumWaitingTime/processVector.size());
-        System.out.println("Average Turn Around Time: ");
-        System.out.println(sumTurnAroundTime / processVector.size());
-
+        while (choice!=0);
     }
 
 }
