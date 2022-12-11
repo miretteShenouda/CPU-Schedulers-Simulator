@@ -116,7 +116,7 @@ public class Main {
 
                 // SJF Algorithm
                 boolean SJF_status = false;
-                for(int i =0 ; i<current.getVarQuantum() ; i++)
+                while(current.getVarQuantum() != 0)
                 {
                     current.setVarQuantum(current.getVarQuantum() -1);
                     current.setBurstTime(current.getBurstTime() - 1);
